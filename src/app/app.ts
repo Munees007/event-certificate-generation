@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, NgModule, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import {ToastrService} from "ngx-toastr"
+
 
 @Component({
   selector: 'app-root',
@@ -9,4 +11,8 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('event-certificate-generation');
+  constructor(private toastr : ToastrService) {}
+  popUp = ()=>{
+    this.toastr.show("Fucking Super")
+  }
 }
