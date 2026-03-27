@@ -1,0 +1,12 @@
+
+<div class="w-160 h-96 relative bg-black" (mousemove)="mousePosition($event)">
+@for (item of texts; track $index) {
+    <div (click)="setIndex($index)" (dragend)="onDrag()" class="w-44 h-44 bg-teal-600"  #textBox style="position: absolute;">{{item}}</div>
+}
+</div>
+
+<input type="text" [(ngModel)]="text">
+<button (click)="addItem()">add item</button>
+
+<button (click)="moveTextLeft()">move left</button>
+<button (click)="moveTextRight()">move right</button>
