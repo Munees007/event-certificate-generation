@@ -1,0 +1,234 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-8 text-white">
+
+  <div class="mb-10">
+    <p class="mb-3 text-center text-5xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+      Create Event Details
+    </p>
+    <p class="mx-auto max-w-3xl text-center text-sm text-slate-400 sm:text-base">
+      Add events and participants here, then move to certificate placement in the next step.
+    </p>
+
+    <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
+        Events: <span class="font-semibold text-white">{{ event.length }}</span>
+      </div>
+      <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
+        Participants: <span class="font-semibold text-white">{{ getTotalParticipants() }}</span>
+      </div>
+    </div>
+
+    <p class="mt-4 text-center text-sm text-emerald-300">
+      {{ helperMessage }}
+    </p>
+  </div>
+
+  <div class="mb-8 flex flex-wrap justify-end gap-3">
+    <button
+      type="button"
+      (click)="downloadExcelTemplate()"
+      class="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 font-semibold text-slate-200 transition hover:bg-white/10"
+    >
+      Download Import Template
+    </button>
+
+    <label class="cursor-pointer rounded-xl border border-cyan-400/20 bg-cyan-500/10 px-5 py-2.5 font-semibold text-cyan-200 transition hover:bg-cyan-500/20">
+      Import From Excel CSV
+      <input
+        type="file"
+        accept=".csv,text/csv"
+        (change)="importExcelTemplate($event)"
+        class="hidden"
+      />
+    </label>
+
+    <button
+      type="button"
+      (click)="addEvents()"
+      class="rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:opacity-90"
+    >
+      + Add Event
+    </button>
+  </div>
+
+  @if (event.length === 0) {
+    <div class="mb-8 rounded-2xl border border-dashed border-white/10 bg-white/5 p-8 text-center">
+      <p class="text-lg font-semibold text-white">No events added yet</p>
+      <p class="mt-2 text-sm text-slate-400">Click "Add Event" to start filling event and participant details.</p>
+    </div>
+  }
+
+  @for (item of event; track $index; let eventIndex = $index) {
+
+  <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl transition hover:shadow-indigo-500/10">
+
+    <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Event {{ eventIndex + 1 }}</p>
+        <p class="mt-2 text-2xl font-bold text-indigo-300 tracking-wide">
+          {{ event[eventIndex].name || 'Untitled Event' }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="removeEvents(eventIndex)"
+        class="rounded-lg bg-red-500/80 px-3 py-2 text-sm transition shadow-md hover:bg-red-600"
+      >
+        Remove
+      </button>
+    </div>
+
+    <div class="mb-6">
+      <label class="mb-2 block text-sm font-semibold text-gray-300">Event Name</label>
+      <input
+        [(ngModel)]="event[eventIndex].name"
+        type="text"
+        class="w-full rounded-xl border border-white/10 bg-white/10 px-3 py-3 outline-none transition placeholder-gray-400 focus:ring-2 focus:ring-indigo-500"
+        placeholder="Enter event name"
+      />
+    </div>
+
+    <div class="space-y-5">
+
+      @for (item of event[eventIndex].Students; track $index) {
+
+      <div class="rounded-xl border border-white/10 bg-white/5 p-5 transition hover:bg-white/10">
+
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-lg font-semibold text-purple-300">
+              Participant {{ $index + 1 }}
+            </p>
+            <p class="text-sm text-slate-400">Certificate data for this participant</p>
+          </div>
+
+          <button
+            type="button"
+            (click)="removeStudents($index,eventIndex)"
+            class="rounded bg-red-500/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition hover:bg-red-600"
+          >
+            Remove
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-8">
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Name</span>
+            <input
+              placeholder="Name"
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].name"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Roll No</span>
+            <input
+              placeholder="Roll No"
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].rollNo"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Department</span>
+            <input
+              placeholder="Department"
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].department"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Year</span>
+            <select
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].year">
+              @for (year of yearOptions; track year) {
+                <option [ngValue]="year" class="bg-slate-900">Year {{ year }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Section</span>
+            <select
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="!event[eventIndex].Students[$index].includeSection"
+              [(ngModel)]="event[eventIndex].Students[$index].section">
+              @for (section of sectionOptions; track section) {
+                <option [value]="section" class="bg-slate-900">Section {{ section }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Use Section</span>
+            <button
+              type="button"
+              (click)="event[eventIndex].Students[$index].includeSection = !event[eventIndex].Students[$index].includeSection"
+              class="flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition hover:bg-white/15"
+            >
+              <span>{{ event[eventIndex].Students[$index].includeSection ? 'On' : 'Off' }}</span>
+              <span
+                class="h-3 w-3 rounded-full"
+                [class.bg-emerald-400]="event[eventIndex].Students[$index].includeSection"
+                [class.bg-slate-500]="!event[eventIndex].Students[$index].includeSection"
+              ></span>
+            </button>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Gender</span>
+            <select
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].gender">
+              @for (gender of genderOptions; track gender) {
+                <option [value]="gender" class="bg-slate-900">{{ gender }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Prize</span>
+            <select
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              [(ngModel)]="event[eventIndex].Students[$index].prize">
+              @for (prize of prizeOptions; track prize) {
+                <option [value]="prize" class="bg-slate-900">{{ prize }} Prize</option>
+              }
+            </select>
+          </label>
+
+        </div>
+      </div>
+
+      }
+
+      <div class="flex justify-end">
+        <button
+          type="button"
+          (click)="addStudents(eventIndex)"
+          class="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-sm font-medium shadow-lg shadow-green-500/20 transition hover:opacity-90"
+        >
+          + Add Student
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  }
+
+  <div class="flex justify-end">
+    <button
+      type="button"
+      class="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-5 py-2.5 text-sm font-medium shadow-lg shadow-green-500/20 transition hover:opacity-90"
+      (click)="gotoNextStep()"
+    >
+      Go To Next Step
+    </button>
+  </div>
+</div>

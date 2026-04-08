@@ -1,4 +1,79 @@
-<div class="w-full h-screen bg-[#25a4a9] relative text-black p-5 flex flex-col justify-center items-center">
-    <h1 class="text-center absolute top-5 font-[MyFont] text-4xl font-black tracking-[1rem]">Certify Hub</h1>
-    <app-login-form></app-login-form>
+<div class="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-8 text-white">
+
+  <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center">
+    <div class="mb-10 text-center">
+      <p class="mb-4 font-[MyFont] text-4xl font-black tracking-[0.6rem] text-cyan-200 sm:text-5xl">
+        Certify Hub
+      </p>
+      <p class="mx-auto max-w-3xl text-sm text-slate-400 sm:text-base">
+        Create event details, preview certificate data properly, and download the final certificates as a zip.
+      </p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl transition hover:shadow-indigo-500/10">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Workflow</p>
+        <p class="mt-3 text-3xl font-bold text-indigo-300">Simple Certificate Flow</p>
+        <p class="mt-4 text-sm leading-7 text-slate-300">
+          Start with event details, add participants manually or import them from the template, then move to the designer page to place markers and preview the final output before download.
+        </p>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+            <p class="text-sm font-semibold text-cyan-300">Step 1</p>
+            <p class="mt-2 text-lg font-bold text-white">Add Events</p>
+            <p class="mt-2 text-sm text-slate-400">Enter event name and participant data.</p>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+            <p class="text-sm font-semibold text-cyan-300">Step 2</p>
+            <p class="mt-2 text-lg font-bold text-white">Design Preview</p>
+            <p class="mt-2 text-sm text-slate-400">Place data points and adjust certificate text.</p>
+          </div>
+
+          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+            <p class="text-sm font-semibold text-cyan-300">Step 3</p>
+            <p class="mt-2 text-lg font-bold text-white">Download Zip</p>
+            <p class="mt-2 text-sm text-slate-400">Get participant-wise certificates inside folders.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl transition hover:shadow-indigo-500/10">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Quick Start</p>
+        <p class="mt-3 text-2xl font-bold text-purple-300">Open What You Need</p>
+
+        <div class="mt-6 space-y-4">
+          <a
+            routerLink="/create-event"
+            class="block rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-4 font-semibold shadow-lg shadow-indigo-500/20 transition hover:opacity-90"
+          >
+            Create Event Details
+          </a>
+
+          <a
+            routerLink="/generate-certify"
+            class="block rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 px-5 py-4 font-semibold shadow-lg shadow-green-500/20 transition hover:opacity-90"
+          >
+            Open Certificate Designer
+          </a>
+        </div>
+
+        <div class="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
+          <p class="text-sm font-semibold text-white">Best Font Suggestion</p>
+          <p class="mt-2 text-sm text-slate-300">
+            Use <span class="font-semibold text-cyan-300">Cormorant Garamond</span> for certificate text and
+            <span class="font-semibold text-cyan-300">Cinzel</span> for headings if you want a more classic certificate look.
+          </p>
+        </div>
+
+        <div class="mt-4 rounded-xl border border-white/10 bg-white/5 p-4">
+          <p class="text-sm font-semibold text-white">Safety</p>
+          <p class="mt-2 text-sm text-slate-300">
+            Event details are autosaved in local storage, and you can also import participants using the Excel-friendly CSV template.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
