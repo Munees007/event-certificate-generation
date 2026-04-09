@@ -1,3 +1,5 @@
+export type Prize = 'I' | 'II' | 'III'
+
 export interface Student
 {
     rollNo:string;
@@ -5,8 +7,9 @@ export interface Student
     department:string;
     year:number;
     includeSection:boolean;
-    section: "A" | "B"
-    gender: "Male" | "Female"
-    prize: "I" | "II" | "III"
+    section: "A" | "B";
+    gender: "Male" | "Female";
+    includePrize:boolean;
+    prize: Prize;
 }
 

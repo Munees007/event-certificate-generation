@@ -111,7 +111,7 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-8">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-9">
 
           <label class="block">
             <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Name</span>
@@ -193,12 +193,29 @@
           <label class="block">
             <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Prize</span>
             <select
-              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500"
+              class="w-full rounded-lg border border-white/10 bg-white/10 p-2.5 uppercase outline-none transition focus:ring-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="!event[eventIndex].Students[$index].includePrize"
               [(ngModel)]="event[eventIndex].Students[$index].prize">
               @for (prize of prizeOptions; track prize) {
                 <option [value]="prize" class="bg-slate-900">{{ prize }} Prize</option>
               }
             </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Use Prize</span>
+            <button
+              type="button"
+              (click)="event[eventIndex].Students[$index].includePrize = !event[eventIndex].Students[$index].includePrize"
+              class="flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition hover:bg-white/15"
+            >
+              <span>{{ event[eventIndex].Students[$index].includePrize ? 'On' : 'Off' }}</span>
+              <span
+                class="h-3 w-3 rounded-full"
+                [class.bg-emerald-400]="event[eventIndex].Students[$index].includePrize"
+                [class.bg-slate-500]="!event[eventIndex].Students[$index].includePrize"
+              ></span>
+            </button>
           </label>
 
         </div>

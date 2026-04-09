@@ -1,0 +1,10 @@
+Source file: c:\Users\sudharsan R\Downloads\Book2.xlsx
+Output file: d:\event-certificate-generation\Book2-import-format.csv
+Total import rows created: 27
+
+Assumptions used:
+- Section headings (Chairman, Secretaries, Treasurers) were mapped to eventName.
+- The trailing academic value like "II MCA" or "III BCA" was parsed into year and department.
+- rollNo, gender, section, and prize were left blank/off because the source sheet does not provide them.
+- The app defaults blank gender to Male during import, so review that column before importing if certificate salutation matters.
+

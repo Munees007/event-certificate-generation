@@ -3,7 +3,7 @@ import { eventType } from '../../types/event';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Data } from '../../data';
-import { Student } from '../../types/user';
+import { Prize, Student } from '../../types/user';
 
 @Component({
   selector: 'app-create-event-details',
@@ -19,7 +19,7 @@ export class CreateEventDetails {
   readonly yearOptions = [1, 2, 3, 4]
   readonly sectionOptions: Array<'A' | 'B'> = ['A', 'B']
   readonly genderOptions: Array<'Male' | 'Female'> = ['Male', 'Female']
-  readonly prizeOptions: Array<'I' | 'II' | 'III'> = ['I', 'II', 'III']
+  readonly prizeOptions: Prize[] = ['I', 'II', 'III']
 
   helperMessage = 'Draft autosaves in this browser while you type.'
   event: eventType[] = []
@@ -78,10 +78,10 @@ export class CreateEventDetails {
 
   downloadExcelTemplate = () =>{
     const templateRows = [
-      'eventName,participantName,rollNo,department,year,includeSection,section,gender,prize',
-      'Coding Contest,Ganesh Moorthy,25PCA135,MCA,1,true,A,Male,I',
-      'Coding Contest,Keerthana S,25PCA136,MCA,1,true,A,Female,II',
-      'Debugging Challenge,Ram Kumar,24BCA101,BCA,3,false,,Male,I',
+      'eventName,participantName,rollNo,department,year,includeSection,section,gender,includePrize,prize',
+      'Coding Contest,Ganesh Moorthy,25PCA135,MCA,1,true,A,Male,true,I',
+      'Coding Contest,Keerthana S,25PCA136,MCA,1,true,A,Female,true,II',
+      'Debugging Challenge,Ram Kumar,24BCA101,BCA,3,false,,Male,false,',
     ]
 
     const blob = new Blob([templateRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
@@ -123,6 +123,7 @@ export class CreateEventDetails {
       includeSection:true,
       section:"A",
       gender:"Male",
+      includePrize:true,
       prize:"I"
     }
   }
@@ -167,6 +168,7 @@ export class CreateEventDetails {
 
   private sanitizeStudent = (value: unknown): Student =>{
     const student = value as Partial<Student>
+    const hasPrize = this.hasPrizeValue(student.prize)
 
     return {
       name: typeof student.name === 'string' ? student.name : '',
@@ -176,7 +178,8 @@ export class CreateEventDetails {
       includeSection: student.includeSection !== false,
       section: student.section === 'B' ? 'B' : 'A',
       gender: student.gender === 'Female' ? 'Female' : 'Male',
-      prize: this.prizeOptions.includes(student.prize as 'I' | 'II' | 'III') ? student.prize as 'I' | 'II' | 'III' : 'I',
+      includePrize: student.includePrize === false ? false : hasPrize,
+      prize: hasPrize ? student.prize as Prize : 'I',
     }
   }
 
@@ -210,6 +213,8 @@ export class CreateEventDetails {
         })
       }
 
+      const normalizedPrize = this.normalizePrize(rowData['prize'])
+
       eventsMap.get(eventName)?.Students.push({
         name: rowData['participantname']?.trim() || '',
         rollNo: rowData['rollno']?.trim() || '',
@@ -218,7 +223,8 @@ export class CreateEventDetails {
         includeSection: rowData['includesection']?.trim().toLowerCase() !== 'false',
         section: rowData['section']?.trim().toUpperCase() === 'B' ? 'B' : 'A',
         gender: rowData['gender']?.trim().toLowerCase() === 'female' ? 'Female' : 'Male',
-        prize: this.normalizePrize(rowData['prize']),
+        includePrize: this.parseOptionalFlag(rowData['includeprize'], normalizedPrize !== ''),
+        prize: normalizedPrize || 'I',
       })
     }
 
@@ -259,8 +265,8 @@ export class CreateEventDetails {
     return values
   }
 
-  private normalizePrize = (value: string): 'I' | 'II' | 'III' =>{
-    const prizeValue = value.trim().toUpperCase()
+  private normalizePrize = (value?: string): Prize | '' =>{
+    const prizeValue = value?.trim().toUpperCase() || ''
 
     if (prizeValue === 'II') {
       return 'II'
@@ -270,7 +276,23 @@ export class CreateEventDetails {
       return 'III'
     }
 
-    return 'I'
+    if (prizeValue === 'I') {
+      return 'I'
+    }
+
+    return ''
+  }
+
+  private hasPrizeValue = (value: unknown): value is Prize =>{
+    return this.prizeOptions.includes(value as Prize)
+  }
+
+  private parseOptionalFlag = (value: string | undefined, fallback: boolean): boolean =>{
+    if (typeof value !== 'string' || value.trim() === '') {
+      return fallback
+    }
+
+    return value.trim().toLowerCase() !== 'false'
   }
 
   private downloadFile = (blob: Blob, fileName: string) =>{

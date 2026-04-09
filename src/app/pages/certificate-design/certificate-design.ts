@@ -341,6 +341,10 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getPrizeText(student?: Student): string {
+    if (student?.includePrize === false) {
+      return '';
+    }
+
     return student?.prize || 'I';
   }
 

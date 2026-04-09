@@ -1,0 +1,13 @@
+Source file: c:\Users\sudharsan R\Downloads\test.xlsx
+Output file: d:\event-certificate-generation\test-import-format.csv
+Total import rows created: 66
+
+Assumptions used:
+- Rows split across two lines were merged when the second line contained only a roll number.
+- Team members without their own academic/prize cells were assigned the nearest prize-bearing row in the same non-blank block.
+- Gender was left blank because the source sheet does not provide it.
+- The app defaults blank gender to Male during import, so review that column before importing if certificate salutation matters.
+- The academic typo "IIII" was normalized to year 4.
+
+Ignored ambiguous blocks:
+- Event: POSTER MAKING | Rows: [122] | Text: ['TECHNO QUIZ']
