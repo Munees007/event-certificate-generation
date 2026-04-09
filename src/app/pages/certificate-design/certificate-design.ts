@@ -10,6 +10,7 @@ type FontWeightOption = '400' | '500' | '600' | '700';
 
 interface TextItem {
   color: string;
+  fontFamily: string;
   fontSize: number;
   fontWeight: FontWeightOption;
   key: string;
@@ -29,6 +30,7 @@ interface ImageBounds {
 
 interface MarkerDefinition {
   color: string;
+  fontFamily: string;
   fontSize: number;
   fontWeight: FontWeightOption;
   key: string;
@@ -36,11 +38,13 @@ interface MarkerDefinition {
   maxWidthPercent: number;
 }
 
+const CERTIFICATE_FONT_FAMILY = '"Kalam", "Segoe Print", "Bradley Hand", cursive';
+
 const BASE_MARKERS: MarkerDefinition[] = [
-  { key: 'eventName', label: 'Event Name', color: '#3b82f6', fontSize: 32, fontWeight: '700', maxWidthPercent: 70 },
-  { key: 'nameAndRollNo', label: 'Name + Roll No', color: '#10b981', fontSize: 28, fontWeight: '700', maxWidthPercent: 38 },
-  { key: 'academicInfo', label: "Year + Dept + 'Section'", color: '#ef4444', fontSize: 18, fontWeight: '500', maxWidthPercent: 34 },
-  { key: 'prize', label: 'Prize', color: '#8b5cf6', fontSize: 24, fontWeight: '700', maxWidthPercent: 16 },
+  { key: 'eventName', label: 'Event Name', color: '#3b82f6', fontFamily: CERTIFICATE_FONT_FAMILY, fontSize: 32, fontWeight: '700', maxWidthPercent: 70 },
+  { key: 'nameAndRollNo', label: 'Name + Roll No', color: '#10b981', fontFamily: CERTIFICATE_FONT_FAMILY, fontSize: 38, fontWeight: '700', maxWidthPercent: 38 },
+  { key: 'academicInfo', label: "Year + Dept + 'Section'", color: '#ef4444', fontFamily: CERTIFICATE_FONT_FAMILY, fontSize: 18, fontWeight: '700', maxWidthPercent: 34 },
+  { key: 'prize', label: 'Prize', color: '#8b5cf6', fontFamily: CERTIFICATE_FONT_FAMILY, fontSize: 24, fontWeight: '700', maxWidthPercent: 16 },
 ];
 
 const CUSTOM_COLORS = ['#22c55e', '#06b6d4', '#f97316', '#eab308', '#ec4899', '#a855f7'];
@@ -74,6 +78,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
   private readonly markerSize = 14;
   private previewFrame: number | null = null;
   private templateImage: HTMLImageElement | null = null;
+  private readonly canvasFontsReady = this.preloadCanvasFonts();
 
   constructor(private dataService: Data) {}
 
@@ -251,6 +256,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
         marker.label,
         this.getMarkerSample(marker.key, firstEvent, firstStudent),
         marker.color,
+        marker.fontFamily,
         marker.fontSize,
         marker.fontWeight,
         marker.maxWidthPercent,
@@ -264,6 +270,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
     label: string,
     sample: string,
     color: string,
+    fontFamily: string,
     fontSize: number,
     fontWeight: FontWeightOption,
     maxWidthPercent: number,
@@ -275,6 +282,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
 
     return {
       color,
+      fontFamily,
       fontSize,
       fontWeight,
       key,
@@ -288,7 +296,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
 
   private createCustomMarker(label: string, index: number): TextItem {
     const color = CUSTOM_COLORS[index % CUSTOM_COLORS.length];
-    return this.createMarkerItem(`custom-${index}`, label, label, color, 22, '600', 35, index);
+    return this.createMarkerItem(`custom-${index}`, label, label, color, CERTIFICATE_FONT_FAMILY, 22, '700', 35, index);
   }
 
   private getMarkerSample(key: string, event?: eventType, student?: Student): string {
@@ -413,6 +421,8 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
     currentEvent: eventType,
     currentStudent: Student,
   ): Promise<Blob> {
+    await this.canvasFontsReady;
+
     const renderCanvas = document.createElement('canvas');
     renderCanvas.width = templateImage.naturalWidth || templateImage.width;
     renderCanvas.height = templateImage.naturalHeight || templateImage.height;
@@ -446,7 +456,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
         continue;
       }
 
-      context.font = `${item.fontWeight} ${item.fontSize}px "Times New Roman", Georgia, serif`;
+      context.font = `${item.fontWeight} ${item.fontSize}px ${item.fontFamily}`;
       context.fillText(
         text,
         item.xRatio * renderCanvas.width,
@@ -483,6 +493,8 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private async renderFirstParticipantPreview() {
+    await this.canvasFontsReady;
+
     const previewCanvas = this.previewCanvas?.nativeElement;
     const firstEvent = this.getFirstEvent();
     const firstStudent = this.getFirstStudent();
@@ -503,7 +515,7 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
       previewContext.fillStyle = '#0f172a';
       previewContext.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
       previewContext.fillStyle = '#94a3b8';
-      previewContext.font = '600 24px "Times New Roman", Georgia, serif';
+      previewContext.font = `700 24px ${CERTIFICATE_FONT_FAMILY}`;
       previewContext.fillText('Preview will appear here after image upload and participant data.', 70, 300, 760);
       return;
     }
@@ -577,6 +589,23 @@ export class CertificateDesign implements OnInit, AfterViewInit, OnDestroy {
       image.onerror = () => reject(new Error('Unable to load image'));
       image.src = source;
     });
+  }
+
+  private async preloadCanvasFonts(): Promise<void> {
+    const fonts = (globalThis.document as Document | undefined)?.fonts;
+
+    if (!fonts?.load) {
+      return;
+    }
+
+    try {
+      await Promise.all([
+        fonts.load(`700 40px ${CERTIFICATE_FONT_FAMILY}`),
+        fonts.load(`700 24px ${CERTIFICATE_FONT_FAMILY}`),
+      ]);
+    } catch {
+      // Fall back to browser defaults if custom font loading fails.
+    }
   }
 
   private downloadBlob(blob: Blob, fileName: string) {
